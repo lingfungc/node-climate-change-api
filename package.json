@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "lingfungc",
   "license": "ISC",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12"
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1"
   }
 }
