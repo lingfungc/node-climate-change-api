@@ -9,6 +9,8 @@ const cheerio = require("cheerio");
 // * We are getting all the features/packages from "express"
 const app = express();
 
+const articles = [];
+
 // * Setting up the routes and the actions for each routes
 app.get("/", (req, res) => {
   // This ".json()" is converting the data from JSON to JavaScript object
@@ -17,10 +19,31 @@ app.get("/", (req, res) => {
 
 app.get("/news", (req, res) => {
   axios
-    .get("https://www.nytimes.com/international/section/opinion")
+    .get("https://www.nytimes.com/international/section/climate")
     .then((response) => {
+      // * Fetch the HTML file from the URL
       const html = response.data;
       console.log(html);
+
+      // * We use cheerio to pick up elements from the HTML file, and "$" is a cheerio syntax
+      const $ = cheerio.load(html);
+
+      $("a:contains('Climate')", html).each(function () {
+        const title = $(this).text();
+        console.log(title);
+
+        const url = $(this).attr("href");
+        console.log(url);
+
+        articles.push({
+          title,
+          url,
+        });
+      });
+      res.json(articles);
+    })
+    .catch((err) => {
+      console.log(err);
     });
 });
 
