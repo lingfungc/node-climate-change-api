@@ -11,6 +11,8 @@ const app = express();
 
 const articles = [];
 
+const nytimesUrl = "https://www.nytimes.com";
+
 // * Setting up the routes and the actions for each routes
 app.get("/", (req, res) => {
   // This ".json()" is converting the data from JSON to JavaScript object
@@ -23,7 +25,7 @@ app.get("/news", (req, res) => {
     .then((response) => {
       // * Fetch the HTML file from the URL
       const html = response.data;
-      console.log(html);
+      // console.log(html);
 
       // * We use cheerio to pick up elements from the HTML file, and "$" is a cheerio syntax
       const $ = cheerio.load(html);
@@ -32,7 +34,10 @@ app.get("/news", (req, res) => {
         const title = $(this).text();
         console.log(title);
 
-        const url = $(this).attr("href");
+        let url = $(this).attr("href");
+        if (!url.includes("https")) {
+          url = nytimesUrl + url;
+        }
         console.log(url);
 
         articles.push({
