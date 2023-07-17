@@ -23,7 +23,7 @@ const getArticles = (newspaperData) => {
       if (title.includes("Climate") || title.includes("climate")) {
         let url = $(this).attr("href");
         if (!url.includes("https")) {
-          url = nytimesUrl + url;
+          url = newspaperData.base + url;
         }
 
         title = title.replaceAll("\n", "").replaceAll("\t", "");
@@ -38,8 +38,6 @@ const getArticles = (newspaperData) => {
   });
 };
 
-const nytimesUrl = "https://www.nytimes.com";
-
 const newspapers = [
   {
     name: "guardian",
@@ -52,10 +50,12 @@ const newspapers = [
   {
     name: "telegraph",
     address: "https://www.telegraph.co.uk/climate-change/",
+    base: "https://www.telegraph.co.uk",
   },
   {
     name: "nytimes",
     address: "https://www.nytimes.com/international/section/climate",
+    base: "https://www.nytimes.com",
   },
 ];
 
