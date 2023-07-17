@@ -9,9 +9,28 @@ const cheerio = require("cheerio");
 // * We are getting all the features/packages from "express"
 const app = express();
 
-const articles = [];
-
 const nytimesUrl = "https://www.nytimes.com";
+
+const newspapers = [
+  {
+    name: "guardian",
+    address: "https://www.thetimes.co.uk/environment/climate-change",
+  },
+  {
+    name: "thetimes",
+    address: "https://www.theguardian.co.uk/environment/climate-crisis",
+  },
+  {
+    name: "telegraph",
+    address: "https://www.telegraph.co.uk/climate-change/",
+  },
+  {
+    name: "nytimes",
+    address: "https://www.nytimes.com/international/section/climate",
+  },
+];
+
+const articles = [];
 
 // * Setting up the routes and the actions for each routes
 app.get("/", (req, res) => {
