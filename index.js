@@ -15,7 +15,7 @@ const getArticles = (newspaperData) => {
     const $ = cheerio.load(html);
 
     $("a", html).each(function () {
-      const title = $(this).text();
+      let title = $(this).text();
       // console.log(title);
 
       // const url = $(this).attr("href");
@@ -25,6 +25,8 @@ const getArticles = (newspaperData) => {
         if (!url.includes("https")) {
           url = nytimesUrl + url;
         }
+
+        title = title.replaceAll("\n", "").replaceAll("\t", "");
 
         articles.push({
           source: newspaperData.name,
