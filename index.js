@@ -13,6 +13,7 @@ const getArticles = (newspaperData) => {
   axios.get(newspaperData.address).then((response) => {
     const html = response.data;
     const $ = cheerio.load(html);
+    articles = [];
 
     $("a", html).each(function () {
       let title = $(this).text();
@@ -38,14 +39,46 @@ const getArticles = (newspaperData) => {
   });
 };
 
+const getSpecificArticles = (newspaperId, newspaperAddress, newspaperBase) => {
+  axios.get(newspaperAddress).then((response) => {
+    const html = response.data;
+    const $ = cheerio.load(html);
+    specificArticles = [];
+
+    $("a", html).each(function () {
+      let title = $(this).text();
+      // console.log(title);
+
+      // const url = $(this).attr("href");
+
+      if (title.includes("Climate") || title.includes("climate")) {
+        let url = $(this).attr("href");
+        if (!url.includes("https")) {
+          url = newspaperBase + url;
+        }
+
+        title = title.replaceAll("\n", "").replaceAll("\t", "");
+
+        specificArticles.push({
+          source: newspaperId,
+          title,
+          url,
+        });
+      }
+    });
+  });
+};
+
 const newspapers = [
   {
     name: "guardian",
-    address: "https://www.thetimes.co.uk/environment/climate-change",
+    address: "https://www.theguardian.co.uk/environment/climate-crisis",
+    base: "https://www.theguardian.com",
   },
   {
     name: "thetimes",
-    address: "https://www.theguardian.co.uk/environment/climate-crisis",
+    address: "https://www.thetimes.co.uk/environment/climate-change",
+    base: "https://www.thetimes.co.uk/article",
   },
   {
     name: "telegraph",
@@ -59,7 +92,8 @@ const newspapers = [
   },
 ];
 
-const articles = [];
+let articles = [];
+let specificArticles = [];
 
 newspapers.forEach((newspaper) => {
   getArticles(newspaper);
@@ -75,37 +109,23 @@ app.get("/news", (req, res) => {
   res.json(articles);
 });
 
-// app.get("/news", (req, res) => {
-//   axios
-//     .get("https://www.nytimes.com/international/section/climate")
-//     .then((response) => {
-//       // * Fetch the HTML file from the URL
-//       const html = response.data;
-//       // console.log(html);
+app.get("/news/:newspaperId", async (req, res) => {
+  const newspaperId = req.params.newspaperId;
+  // console.log(newspaperId);
 
-//       // * We use cheerio to pick up elements from the HTML file, and "$" is a cheerio syntax
-//       const $ = cheerio.load(html);
+  const newspaperAddress = newspapers.filter(
+    (newspaper) => newspaper.name === newspaperId
+  )[0].address;
+  // console.log(newspaperAddress);
 
-//       $("a:contains('Climate')", html).each(function () {
-//         const title = $(this).text();
-//         console.log(title);
+  const newspaperBase = newspapers.filter(
+    (newspaper) => newspaper.name === newspaperId
+  )[0].base;
+  // console.log(newspaperBase);
 
-//         let url = $(this).attr("href");
-//         if (!url.includes("https")) {
-//           url = nytimesUrl + url;
-//         }
-//         console.log(url);
+  getSpecificArticles(newspaperId, newspaperAddress, newspaperBase);
 
-//         articles.push({
-//           title,
-//           url,
-//         });
-//       });
-//       res.json(articles);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+  res.json(specificArticles);
+});
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
