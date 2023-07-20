@@ -28,7 +28,7 @@ const getArticles = (newspaperData) => {
           url = newspaperData.base + url;
         }
 
-        title = title.replaceAll("\n", "").replaceAll("\t", "");
+        // title = title.replaceAll("\n", "").replaceAll("\t", "");
 
         articles.push({
           source: newspaperData.name,
