@@ -9,6 +9,8 @@ const cheerio = require("cheerio");
 // * We are getting all the features/packages from "express"
 const app = express();
 
+// * Route: GET "/news"
+// * Action: Fetch articles from all newspapers and store them in an array "articles"
 const getArticles = (newspaperData) => {
   axios.get(newspaperData.address).then((response) => {
     const html = response.data;
@@ -39,6 +41,8 @@ const getArticles = (newspaperData) => {
   });
 };
 
+// * Route: GET "/news/:newspaperId"
+// * Action: Fetch articles from a newspaper from params
 const getSpecificArticles = (newspaperId, newspaperAddress, newspaperBase) => {
   axios.get(newspaperAddress).then((response) => {
     const html = response.data;
@@ -113,16 +117,19 @@ app.get("/news/:newspaperId", async (req, res) => {
   const newspaperId = req.params.newspaperId;
   // console.log(newspaperId);
 
+  // * Get the newspaper climate change page url from the ":newspaperId" params
   const newspaperAddress = newspapers.filter(
     (newspaper) => newspaper.name === newspaperId
   )[0].address;
   // console.log(newspaperAddress);
 
+  // * Get the newspaper page base in case the url of the articles missing that base
   const newspaperBase = newspapers.filter(
     (newspaper) => newspaper.name === newspaperId
   )[0].base;
   // console.log(newspaperBase);
 
+  // * Pass the newspaperId (from params), newspaperAddress and newspaperBase to get the newspaper articles
   getSpecificArticles(newspaperId, newspaperAddress, newspaperBase);
 
   res.json(specificArticles);
