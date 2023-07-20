@@ -41,12 +41,17 @@ const getArticles = (newspaperData) => {
 };
 
 // * Route: GET "/news/:newspaperId"
-// * Action: Fetch articles from a newspaper from params
-const getSpecificArticles = (newspaperId, newspaperAddress, newspaperBase) => {
-  axios.get(newspaperAddress).then((response) => {
+// * Action: Fetch articles from a newspaper from params with async/await function
+const getSpecificArticles = async (
+  newspaperId,
+  newspaperAddress,
+  newspaperBase
+) => {
+  try {
+    const response = await axios.get(newspaperAddress);
     const html = response.data;
     const $ = cheerio.load(html);
-    specificArticles = [];
+    let specificArticlesData = [];
 
     $("a", html).each(function () {
       let title = $(this).text();
@@ -62,15 +67,51 @@ const getSpecificArticles = (newspaperId, newspaperAddress, newspaperBase) => {
 
         title = title.replaceAll("\n", "").replaceAll("\t", "");
 
-        specificArticles.push({
+        specificArticlesData.push({
           source: newspaperId,
           title,
           url,
         });
       }
     });
-  });
+
+    // console.log(specificArticlesData);
+    return specificArticlesData;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
+
+// const getSpecificArticles = (newspaperId, newspaperAddress, newspaperBase) => {
+//   axios.get(newspaperAddress).then((response) => {
+//     const html = response.data;
+//     const $ = cheerio.load(html);
+//     specificArticles = [];
+
+//     $("a", html).each(function () {
+//       let title = $(this).text();
+//       // console.log(title);
+
+//       // const url = $(this).attr("href");
+
+//       if (title.includes("Climate") || title.includes("climate")) {
+//         let url = $(this).attr("href");
+//         if (!url.includes("https")) {
+//           url = newspaperBase + url;
+//         }
+
+//         title = title.replaceAll("\n", "").replaceAll("\t", "");
+
+//         specificArticles.push({
+//           source: newspaperId,
+//           title,
+//           url,
+//         });
+//       }
+//     });
+//   });
+// };
 
 const newspapers = [
   {
@@ -116,6 +157,15 @@ app.get("/news/:newspaperId", async (req, res) => {
   const newspaperId = req.params.newspaperId;
   // console.log(newspaperId);
 
+  const specificNewspaper = newspapers.find(
+    (newspaper) => newspaper.name == newspaperId
+  );
+  // console.log(specificNewspaper);
+
+  if (!specificNewspaper) {
+    return res.status(404).json({ error: "Newspaper not found." });
+  }
+
   // * Get the newspaper climate change page url from the ":newspaperId" params
   const newspaperAddress = newspapers.filter(
     (newspaper) => newspaper.name === newspaperId
@@ -129,9 +179,19 @@ app.get("/news/:newspaperId", async (req, res) => {
   // console.log(newspaperBase);
 
   // * Pass the newspaperId (from params), newspaperAddress and newspaperBase to get the newspaper articles
-  getSpecificArticles(newspaperId, newspaperAddress, newspaperBase);
+  try {
+    specificArticles = await getSpecificArticles(
+      newspaperId,
+      newspaperAddress,
+      newspaperBase
+    );
 
-  res.json(specificArticles);
+    // console.log(specificArticles);
+    res.json(specificArticles);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to fetch the articles" });
+  }
 });
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
