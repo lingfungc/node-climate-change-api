@@ -15,7 +15,6 @@ const getArticles = (newspaperData) => {
   axios.get(newspaperData.address).then((response) => {
     const html = response.data;
     const $ = cheerio.load(html);
-    articles = [];
 
     $("a", html).each(function () {
       let title = $(this).text();
