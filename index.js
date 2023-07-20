@@ -113,28 +113,8 @@ const getSpecificArticles = async (
 //   });
 // };
 
-const newspapers = [
-  {
-    name: "guardian",
-    address: "https://www.theguardian.co.uk/environment/climate-crisis",
-    base: "https://www.theguardian.com",
-  },
-  {
-    name: "thetimes",
-    address: "https://www.thetimes.co.uk/environment/climate-change",
-    base: "https://www.thetimes.co.uk/article",
-  },
-  {
-    name: "telegraph",
-    address: "https://www.telegraph.co.uk/climate-change/",
-    base: "https://www.telegraph.co.uk",
-  },
-  {
-    name: "nytimes",
-    address: "https://www.nytimes.com/international/section/climate",
-    base: "https://www.nytimes.com",
-  },
-];
+const newspapers = require("./newspapersData.js");
+// console.log(newspapers);
 
 let articles = [];
 let specificArticles = [];
