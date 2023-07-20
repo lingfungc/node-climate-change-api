@@ -28,7 +28,11 @@ const getArticles = (newspaperData) => {
           url = newspaperData.base + url;
         }
 
+        // * Below replaceAll() function is not available in browser JavaScript
         // title = title.replaceAll("\n", "").replaceAll("\t", "");
+
+        const regex = /[\n\t]/g; // Matches newline and tab characters globally
+        title = title.replace(regex, "");
 
         articles.push({
           source: newspaperData.name,
